@@ -1,3 +1,121 @@
+const myLibrary = [];
+
+// DOM Element Selectors
+const titleInput = document.getElementById("title");
+const authorInput = document.getElementById("author");
+const pagesInput = document.getElementById("pages");
+const checkInput = document.getElementById("check");
+const submitBtn = document.getElementById("submitBtn");
+const tableBody = document.getElementById("tableBody");
+
+// Initialize app
+window.addEventListener("load", () => {
+  populateStorage();
+  render();
+});
+
+submitBtn.addEventListener("click", submitBook);
+
+function Book(title, author, pages, check) {
+  this.title = title;
+  this.author = author;
+  this.pages = pages;
+  this.check = check;
+}
+
+function populateStorage() {
+  if (myLibrary.length === 0) {
+    // Note: pages are stored as numbers
+    const book1 = new Book("Robinson Crusoe", "Daniel Defoe", 252, true);
+    const book2 = new Book("The Old Man and the Sea", "Ernest Hemingway", 127, true);
+    myLibrary.push(book1, book2);
+  }
+}
+
+function submitBook() {
+  // Input Validation & Normalization
+  const titleVal = titleInput.value.trim();
+  const authorVal = authorInput.value.trim();
+  const pagesVal = parseInt(pagesInput.value);
+
+  // Reject empty strings or invalid page numbers
+  if (!titleVal || !authorVal || isNaN(pagesVal) || pagesVal <= 0) {
+    alert("Please provide a valid Title, Author, and Page Count.");
+    return;
+  }
+
+  const newBook = new Book(titleVal, authorVal, pagesVal, checkInput.checked);
+  myLibrary.push(newBook);
+
+  // Clear inputs
+  titleInput.value = "";
+  authorInput.value = "";
+  pagesInput.value = "";
+  checkInput.checked = false;
+
+  render();
+}
+
+function render() {
+  // Clear the container in one operation
+  tableBody.innerHTML = "";
+
+  myLibrary.forEach((book, index) => {
+    const row = document.createElement("tr");
+
+    // Title Cell
+    const titleCell = document.createElement("td");
+    titleCell.textContent = book.title;
+    row.appendChild(titleCell);
+
+    // Author Cell
+    const authorCell = document.createElement("td");
+    authorCell.textContent = book.author;
+    row.appendChild(authorCell);
+
+    // Pages Cell
+    const pagesCell = document.createElement("td");
+    pagesCell.textContent = book.pages;
+    row.appendChild(pagesCell);
+
+    // Read Status Cell
+    const statusCell = document.createElement("td");
+    const statusBtn = document.createElement("button");
+    statusBtn.className = "btn btn-sm btn-success";
+    // Ternary operator for simplification
+    statusBtn.textContent = book.check ? "Yes" : "No";
+
+    statusBtn.addEventListener("click", () => {
+      book.check = !book.check;
+      render();
+    });
+    statusCell.appendChild(statusBtn);
+    row.appendChild(statusCell);
+
+    // Delete Cell
+    const deleteCell = document.createElement("td");
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn-sm btn-warning";
+    deleteBtn.textContent = "Delete";
+
+    deleteBtn.addEventListener("click", () => {
+      const deletedTitle = book.title;
+      myLibrary.splice(index, 1);
+      render();
+      // Alert after deletion logic is complete
+      alert(`Deleted: ${deletedTitle}`);
+    });
+    deleteCell.appendChild(deleteBtn);
+    row.appendChild(deleteCell);
+
+    tableBody.appendChild(row);
+  });
+}
+
+
+
+/*
+
 let myLibrary = [];
 
 window.addEventListener("load", function (e) {
@@ -101,3 +219,5 @@ function render() {
     });
   }
 }
+
+*/
